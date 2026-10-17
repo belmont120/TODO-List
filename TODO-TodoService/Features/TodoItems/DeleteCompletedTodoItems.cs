@@ -12,7 +12,7 @@ public static class DeleteCompletedTodoItems
         group.MapDelete("/completed", HandleAsync).WithName("DeleteCompletedTodoItems");
     }
 
-    internal static async Task<NoContent> HandleAsync(
+    internal static async Task<Ok> HandleAsync(
         ClaimsPrincipal user, TodoDbContext db, CancellationToken cancellationToken)
     {
         var userId = CurrentUser.GetId(user);
@@ -23,6 +23,6 @@ public static class DeleteCompletedTodoItems
         db.TodoItems.RemoveRange(completed);
         await db.SaveChangesAsync(cancellationToken);
 
-        return TypedResults.NoContent();
+        return TypedResults.Ok();
     }
 }

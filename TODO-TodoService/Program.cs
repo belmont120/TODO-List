@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using TODO_TodoService.Data;
-using TODO_TodoService.Data;
 using TODO_TodoService.Features.TodoItems;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +22,7 @@ builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+        // JWT configurations should be removed from the codebased, ideally to a Key Vault service
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -73,5 +73,5 @@ app.MapTodoItemsEndpoints();
 
 app.Run();
 
-// Exposes the implicit Program class so WebApplicationFactory<Program> can bootstrap it in tests.
+// Exposes the implicit Program class so WebApplicationFactory<Program> can bootstrap it in integration tests.
 public partial class Program { }
