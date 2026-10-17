@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="TODO-UserService/TODO-UserService.csproj" />
+  <Project Path="TODO_UserServiceTest.Integration/TODO_UserServiceTest.Integration.csproj" Id="50c98bc3-0e50-48bb-ae05-48c23d95f419" />
+  <Project Path="TODO_UserServiceTest.Unit/TODO_UserServiceTest.Unit.csproj" />
+</Solution>

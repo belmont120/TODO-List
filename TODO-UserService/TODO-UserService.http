@@ -1,6 +1,63 @@
-@TODO_UserService_HostAddress = http://localhost:5123
+@UserService_HostAddress = http://localhost:5123
 
-GET {{TODO_UserService_HostAddress}}/weatherforecast/
-Accept: application/json
+### Login with the seeded demo account
+# @name login
+POST {{UserService_HostAddress}}/api/auth/login
+Content-Type: application/json
 
-###
+{
+  "userName": "demo",
+  "password": "Demo123!"
+}
+
+### Login with a bad password -> 401 Unauthorized
+POST {{UserService_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "userName": "demo",
+  "password": "wrong-password"
+}
+
+### Create a new user
+# @name createUser
+POST {{UserService_HostAddress}}/api/users
+Content-Type: application/json
+
+{
+  "userName": "jdoe",
+  "email": "jdoe@example.com",
+  "displayName": "Jane Doe",
+  "password": "Sup3rSecret!"
+}
+
+### Create a user with a duplicate username -> 409 Conflict
+POST {{UserService_HostAddress}}/api/users
+Content-Type: application/json
+
+{
+  "userName": "demo",
+  "email": "someone-else@example.com",
+  "displayName": "Someone Else",
+  "password": "Sup3rSecret!"
+}
+
+### Create a user with an invalid password -> 400 Validation problem
+POST {{UserService_HostAddress}}/api/users
+Content-Type: application/json
+
+{
+  "userName": "shortpw",
+  "email": "shortpw@example.com",
+  "displayName": "Short Password",
+  "password": "123"
+}
+
+### Log in as the user just created
+POST {{UserService_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "userName": "jdoe",
+  "password": "Sup3rSecret!"
+}
