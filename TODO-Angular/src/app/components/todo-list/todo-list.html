@@ -1,2 +1,55 @@
-<p>todo-list works!</p>
-<app-todo-item></app-todo-item>
+<mat-card appearance="outlined" class="todo-card">
+  <mat-card-header>
+    <mat-card-title>Todo List</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    <form class="todo-card__add-form" (submit)="$event.preventDefault(); addTodo()">
+      <mat-form-field appearance="outline" class="todo-card__add-field" subscriptSizing="dynamic">
+        <mat-label>What needs to be done?</mat-label>
+        <input
+          matInput
+          type="text"
+          [ngModel]="newTitle()"
+          (ngModelChange)="newTitle.set($event)"
+          name="newTitle"
+          autocomplete="off"
+        />
+      </mat-form-field>
+      <button mat-icon-button color="primary" type="submit" [disabled]="!newTitle().trim()" aria-label="Add todo">
+        <mat-icon>add</mat-icon>
+      </button>
+    </form>
+
+    @if (error()) {
+      <p class="todo-card__error">{{ error() }}</p>
+    }
+
+    @if (isLoading()) {
+      <mat-progress-bar mode="indeterminate" />
+    } @else if (todos().length) {
+      <div class="todo-card__list">
+        @for (todo of todos(); track todo.id) {
+          <app-todo-item [todo]="todo" (deleted)="removeTodo($event)" />
+          <mat-divider />
+        }
+      </div>
+    } @else {
+      <p class="todo-card__empty">Nothing here yet — add your first task above.</p>
+    }
+  </mat-card-content>
+
+  <mat-divider />
+
+  <mat-card-actions class="todo-card__footer" align="start">
+    <span class="todo-card__count">{{ remainingCount() }} item{{ remainingCount() === 1 ? '' : 's' }} left</span>
+
+    <mat-button-toggle-group [value]="filter()" (valueChange)="setFilter($event)" aria-label="Filter todos">
+      @for (f of filters; track f.value) {
+        <mat-button-toggle [value]="f.value">{{ f.label }}</mat-button-toggle>
+      }
+    </mat-button-toggle-group>
+
+    <button mat-button type="button" (click)="clearCompleted()">Clear completed</button>
+  </mat-card-actions>
+</mat-card>

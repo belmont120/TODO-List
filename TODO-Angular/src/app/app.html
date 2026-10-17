@@ -1,7 +1,20 @@
+<mat-toolbar color="primary">
+  <span>Todo List</span>
+  <span class="app-spacer"></span>
 
+  @if (auth.isAuthenticated()) {
+    <span class="app-account-status">Signed in as {{ auth.currentUser()!.displayName }}</span>
+    <button mat-button (click)="auth.logout()">Log out</button>
+  } @else {
+    <span class="app-account-status">Browsing as guest</span>
+    <button mat-button (click)="showLogin.set(true)">Log in</button>
+  }
+</mat-toolbar>
 
-<main>
-  <app-login />
-  <app-todo-list />
-
+<main class="page">
+  @if (showLogin() && !auth.isAuthenticated()) {
+    <app-login (cancelled)="showLogin.set(false)" />
+  } @else {
+    <app-todo-list />
+  }
 </main>

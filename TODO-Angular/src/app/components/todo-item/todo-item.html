@@ -1,1 +1,29 @@
-<p>todo-item works!</p>
+<div class="todo-item">
+  <mat-checkbox [checked]="todo().completed" (change)="toggle()" />
+
+  @if (isEditing()) {
+    <mat-form-field appearance="outline" class="todo-item__edit-field" subscriptSizing="dynamic">
+      <input
+        matInput
+        type="text"
+        [ngModel]="editedTitle()"
+        (ngModelChange)="editedTitle.set($event)"
+        (keyup.enter)="saveEdit()"
+        (keyup.escape)="cancelEdit()"
+        (blur)="saveEdit()"
+        autofocus
+      />
+    </mat-form-field>
+  } @else {
+    <span class="todo-item__title" [class.todo-item__title--completed]="todo().completed" (dblclick)="startEdit()">
+      {{ todo().title }}
+    </span>
+    <button mat-icon-button type="button" (click)="startEdit()" aria-label="Edit todo">
+      <mat-icon>edit</mat-icon>
+    </button>
+  }
+
+  <button mat-icon-button color="warn" type="button" (click)="remove()" aria-label="Delete todo">
+    <mat-icon>delete</mat-icon>
+  </button>
+</div>

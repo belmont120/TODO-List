@@ -1,0 +1,4 @@
+{
+  "userServiceUrl": "http://localhost:5116/api",
+  "todoServiceUrl": "http://localhost:5033/api"
+}

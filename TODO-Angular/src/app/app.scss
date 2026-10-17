@@ -1,0 +1,16 @@
+.app-spacer {
+  flex: 1 1 auto;
+}
+
+.app-account-status {
+  margin-right: 0.5rem;
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+
+.page {
+  min-height: calc(100vh - 64px);
+  display: flex;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+}

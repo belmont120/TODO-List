@@ -1,0 +1,22 @@
+.todo-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+}
+
+.todo-item__title {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: break-word;
+  cursor: text;
+}
+
+.todo-item__title--completed {
+  color: var(--mat-sys-on-surface-variant);
+  text-decoration: line-through;
+}
+
+.todo-item__edit-field {
+  flex: 1;
+}

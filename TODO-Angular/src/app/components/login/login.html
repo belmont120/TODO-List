@@ -1,1 +1,58 @@
-<p>login works!</p>
+<mat-card appearance="outlined" class="login-card">
+  <mat-card-header>
+    <mat-card-title>Log in</mat-card-title>
+    <mat-card-subtitle>Sync your todos across devices.</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <form class="login-card__form" (submit)="$event.preventDefault(); submit()">
+      <mat-form-field appearance="outline" class="login-card__field">
+        <mat-label>Username</mat-label>
+        <input
+          matInput
+          type="text"
+          name="userName"
+          autocomplete="username"
+          [ngModel]="userName()"
+          (ngModelChange)="userName.set($event)"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="login-card__field">
+        <mat-label>Password</mat-label>
+        <input
+          matInput
+          type="password"
+          name="password"
+          autocomplete="current-password"
+          [ngModel]="password()"
+          (ngModelChange)="password.set($event)"
+          (keyup.enter)="submit()"
+        />
+      </mat-form-field>
+
+      @if (errorMessage()) {
+        <p class="login-card__error">{{ errorMessage() }}</p>
+      }
+
+      <p class="login-card__hint">Try the demo account: <strong>demo</strong> / <strong>Demo123!</strong></p>
+    </form>
+  </mat-card-content>
+
+  <mat-card-actions align="end">
+    <button mat-button type="button" (click)="cancel()">Continue as guest</button>
+    <button
+      mat-raised-button
+      color="primary"
+      type="button"
+      (click)="submit()"
+      [disabled]="isSubmitting() || !userName().trim() || !password()"
+    >
+      @if (isSubmitting()) {
+        <mat-progress-spinner diameter="18" mode="indeterminate" />
+      } @else {
+        Log in
+      }
+    </button>
+  </mat-card-actions>
+</mat-card>
