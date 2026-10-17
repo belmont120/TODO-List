@@ -1,6 +1,117 @@
-@TODO_TodoService_HostAddress = http://localhost:5066
+@TodoService_HostAddress = http://localhost:5066
+@UserService_HostAddress = http://localhost:5123
 
-GET {{TODO_TodoService_HostAddress}}/weatherforecast/
+### Without a token -> 401 Unauthorized
+GET {{TodoService_HostAddress}}/api/todoitems
+Accept: application/json
+
+### Log in as the seeded demo account (TodoService trusts tokens issued by UserService)
+# @name login
+POST {{UserService_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "userName": "demo",
+  "password": "Demo123!"
+}
+
+### Get all todo items for the demo user (includes the two seeded items)
+GET {{TodoService_HostAddress}}/api/todoitems
+Authorization: Bearer {{login.response.body.$.token}}
+Accept: application/json
+
+### Create a new todo item
+# @name createTodo
+POST {{TodoService_HostAddress}}/api/todoitems
+Authorization: Bearer {{login.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "title": "Write TodoService tests"
+}
+
+### Create a todo item with a blank title -> 400 Validation problem
+POST {{TodoService_HostAddress}}/api/todoitems
+Authorization: Bearer {{login.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "title": "   "
+}
+
+### Get the todo item just created, by id
+GET {{TodoService_HostAddress}}/api/todoitems/{{createTodo.response.body.$.id}}
+Authorization: Bearer {{login.response.body.$.token}}
+Accept: application/json
+
+### Get a todo item that does not exist -> 404 Not Found
+GET {{TodoService_HostAddress}}/api/todoitems/00000000-0000-0000-0000-000000000000
+Authorization: Bearer {{login.response.body.$.token}}
+Accept: application/json
+
+### Mark the todo item just created as completed
+PUT {{TodoService_HostAddress}}/api/todoitems/{{createTodo.response.body.$.id}}
+Authorization: Bearer {{login.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "title": "Write TodoService tests",
+  "isCompleted": true
+}
+
+### Update a todo item that does not exist -> 404 Not Found
+PUT {{TodoService_HostAddress}}/api/todoitems/00000000-0000-0000-0000-000000000000
+Authorization: Bearer {{login.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "title": "Doesn't matter",
+  "isCompleted": true
+}
+
+### Register a second user, to demonstrate that todos are scoped per user
+# @name createOtherUser
+POST {{UserService_HostAddress}}/api/users
+Content-Type: application/json
+
+{
+  "userName": "todo-isolation-check",
+  "email": "todo-isolation-check@example.com",
+  "displayName": "Isolation Check",
+  "password": "Sup3rSecret!"
+}
+
+### Log in as that second user
+# @name loginOtherUser
+POST {{UserService_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "userName": "todo-isolation-check",
+  "password": "Sup3rSecret!"
+}
+
+### The second user should see no todos (none of the demo user's items are visible)
+GET {{TodoService_HostAddress}}/api/todoitems
+Authorization: Bearer {{loginOtherUser.response.body.$.token}}
+Accept: application/json
+
+### ...and cannot fetch the demo user's todo item directly either -> 404 Not Found
+GET {{TodoService_HostAddress}}/api/todoitems/{{createTodo.response.body.$.id}}
+Authorization: Bearer {{loginOtherUser.response.body.$.token}}
+Accept: application/json
+
+### Delete the todo item just created
+DELETE {{TodoService_HostAddress}}/api/todoitems/{{createTodo.response.body.$.id}}
+Authorization: Bearer {{login.response.body.$.token}}
+
+### Clear all completed todo items for the demo user
+DELETE {{TodoService_HostAddress}}/api/todoitems/completed
+Authorization: Bearer {{login.response.body.$.token}}
+
+### Get all todo items again, to confirm the final state
+GET {{TodoService_HostAddress}}/api/todoitems
+Authorization: Bearer {{login.response.body.$.token}}
 Accept: application/json
 
 ###
