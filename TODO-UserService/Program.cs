@@ -43,6 +43,8 @@ builder.Services
 
 builder.Services.AddAuthorization();
 
+// Add CORS policy to allow requests from the frontend application
+// Origins should be removed from the codebase, ideally to a configuration service and retrieved at runtime
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(FrontendCorsPolicy, policy =>

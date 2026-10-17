@@ -6,6 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService } from '../../services/auth';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   imports: [
@@ -39,8 +40,8 @@ export class Login {
     this.errorMessage.set(null);
     try {
       await this.auth.login(this.userName().trim(), this.password());
-    } catch {
-      this.errorMessage.set('Invalid username or password.');
+    } catch (error: unknown) {
+      this.errorMessage.set(this.getLoginErrorMessage(error));
     } finally {
       this.isSubmitting.set(false);
     }
@@ -49,4 +50,19 @@ export class Login {
   cancel(): void {
     this.cancelled.emit();
   }
+
+    private getLoginErrorMessage(error: unknown): string {
+    if (error instanceof HttpErrorResponse) {
+      if (error.status === 401) {
+        return 'Invalid username or password.';
+      }
+
+      if (error.status === 0) {
+        return 'Could not reach the server. Please try again.';
+      }
+    }
+
+    return 'Something went wrong. Please try again.';
+  }
 }
+

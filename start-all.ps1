@@ -36,6 +36,7 @@ function Test-Port([int]$Port) {
 foreach ($app in $apps | Where-Object { $_.Command -like 'dotnet*' }) {
     Write-Host "Restoring $($app.Name)..." -ForegroundColor Yellow
     dotnet restore (Join-Path $root $app.Dir)
+
     if ($LASTEXITCODE -ne 0) {
         Write-Error "dotnet restore failed for $($app.Name)."
         exit 1
@@ -47,7 +48,16 @@ $angularDir = Join-Path $root 'TODO-Angular'
 if (-not (Test-Path (Join-Path $angularDir 'node_modules'))) {
     Write-Host 'Installing Angular dependencies...' -ForegroundColor Yellow
     Push-Location $angularDir
-    try { npm install } finally { Pop-Location }
+    try {
+        npm install
+
+        if ($LASTEXITCODE -ne 0) {
+            Write-Error 'npm install failed for the Angular app.'
+            exit 1
+        }
+    } finally {
+        Pop-Location
+    }
 }
 
 foreach ($app in $apps) {
@@ -66,11 +76,13 @@ foreach ($app in $apps) {
 Write-Host "Waiting for Angular at $angularUrl ..." -ForegroundColor Cyan
 $timeout = [TimeSpan]::FromMinutes(3)
 $sw = [Diagnostics.Stopwatch]::StartNew()
+
 while (-not (Test-Port 4200)) {
     if ($sw.Elapsed -gt $timeout) {
         Write-Warning "Angular did not start within $($timeout.TotalMinutes) minutes. Check the Angular window for errors."
         exit 1
     }
+
     Start-Sleep -Seconds 1
 }
 

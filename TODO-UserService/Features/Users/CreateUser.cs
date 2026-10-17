@@ -39,7 +39,7 @@ public static class CreateUser
         }
 
         var exists = await db.Users.AnyAsync(
-            u => u.UserName == request.UserName || u.Email == request.Email, cancellationToken);
+            u => u.UserName == request.UserName.Trim() || u.Email == request.Email.Trim(), cancellationToken);
         if (exists)
         {
             return TypedResults.Conflict("A user with the same username or email already exists.");
