@@ -15,10 +15,11 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should render title', async () => {
+  it('should render the toolbar title and guest status', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, TODO-Angular');
+    const toolbar = (fixture.nativeElement as HTMLElement).querySelector('mat-toolbar');
+    expect(toolbar?.textContent).toContain('Todo List');
+    expect(toolbar?.textContent).toContain('Browsing as guest');
   });
 });

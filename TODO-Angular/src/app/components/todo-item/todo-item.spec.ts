@@ -11,6 +11,12 @@ describe('TodoItem', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(TodoItem);
+    fixture.componentRef.setInput('todo', {
+      id: '1',
+      title: 'Test todo',
+      completed: false,
+      createdAt: Date.now(),
+    });
     component = fixture.componentInstance;
     await fixture.whenStable();
   });
