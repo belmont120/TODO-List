@@ -21,15 +21,23 @@ $apps = @(
     @{ Name = 'Angular';     Dir = 'TODO-Angular';     Command = 'npm start';                                    Port = 4200 }
 )
 
+# Checks both IPv4 and IPv6 loopback: the Angular dev server may listen on ::1 only,
+# and a default TcpClient is IPv4-only.
 function Test-Port([int]$Port) {
-    $client = New-Object System.Net.Sockets.TcpClient
-    try {
-        $client.ConnectAsync('localhost', $Port).Wait(500) -and $client.Connected
-    } catch {
-        $false
-    } finally {
-        $client.Dispose()
+    foreach ($address in [Net.IPAddress]::Loopback, [Net.IPAddress]::IPv6Loopback) {
+        $client = New-Object System.Net.Sockets.TcpClient($address.AddressFamily)
+        try {
+            if ($client.ConnectAsync($address, $Port).Wait(500) -and $client.Connected) {
+                return $true
+            }
+        } catch {
+            # Connection refused on this address; try the next one.
+        } finally {
+            $client.Dispose()
+        }
     }
+
+    $false
 }
 
 # Restore NuGet packages for the backend services up front so errors surface here.
